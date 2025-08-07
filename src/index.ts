@@ -3,6 +3,7 @@ import { Action, BuildParameters, Cache, CloudRunner, Docker, ImageTag, Output }
 import { Cli } from './model/cli/cli';
 import MacBuilder from './model/mac-builder';
 import PlatformSetup from './model/platform-setup';
+import path from 'node:path';
 
 async function runMain() {
   try {
@@ -23,7 +24,8 @@ async function runMain() {
       workspace = buildParameters.workspaceVolumeName;
     }
     if (buildParameters.actionsVolumeName !== '') {
-      actionFolder = buildParameters.actionsVolumeName;
+      const actionName = path.basename(path.dirname(actionFolder));
+      actionFolder = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
     }
 
     let exitCode = -1;
