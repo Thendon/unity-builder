@@ -14,10 +14,17 @@ async function runMain() {
     Action.checkCompatibility();
     Cache.verify();
 
-    const { workspace, actionFolder } = Action;
+    let { workspace, actionFolder } = Action;
 
     const buildParameters = await BuildParameters.create();
     const baseImage = new ImageTag(buildParameters);
+
+    if (buildParameters.workspaceVolumeName !== '') {
+      workspace = buildParameters.workspaceVolumeName;
+    }
+    if (buildParameters.actionsVolumeName !== '') {
+      actionFolder = buildParameters.actionsVolumeName;
+    }
 
     let exitCode = -1;
 

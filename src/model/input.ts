@@ -245,6 +245,14 @@ class Input {
     return Input.getInput('dockerCpuLimit') ?? os.cpus().length.toString();
   }
 
+  static get workspaceVolumeName(): string {
+    return Input.getInput('workspaceVolumeName') ?? '';
+  }
+
+  static get actionsVolumeName(): string {
+    return Input.getInput('actionsVolumeName') ?? '';
+  }
+
   static get dockerMemoryLimit(): string {
     const bytesInMegabyte = 1024 * 1024;
 
