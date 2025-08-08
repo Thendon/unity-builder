@@ -1,3 +1,63 @@
+# Modifications by me
+
+## Motivation
+
+Had to got it running on my Gitea instance which is using https://gitea.com/gitea/act_runner.
+
+## Whats new
+
+* added workspaceVolumeName parameter
+* added actionsVolumeName parameter
+
+## Setup
+
+On the host system you have to:
+* Create a volume for the *workspace* which is passed down to the unity container
+* Create a bind-volume for the act *actions* which is at least passed down to the act_runner container
+
+Example compose 
+```
+services:
+  act_runner:
+    ...
+    volumes:
+      - ...
+      - ./config.yaml:/config.yaml
+      - unity_workspace:/github/workspace
+      - /act_actions:/actions:rw
+    environment:
+      CONFIG_FILE: '/config.yaml'
+volumes:
+  ...
+  unity_workspace:
+    name: unity_workspace
+```
+
+config.yaml adjustments
+```
+container:
+  options: "--volume unity_workspace:/github/workspace"
+  workdir_parent: github/workspace
+  valid_volumes:
+    - unity_workspace
+host:
+  workdir_parent: "/actions"
+```
+
+Then add the volumes to the build step like this
+
+Build step
+```
+- name: Build Unity project
+  uses: https://github.com/Thendon/unity-builder@main
+  env:
+    ...
+  with:
+    ...
+    workspaceVolumeName: "unity_workspace"
+    actionsVolumeName: "/act_actions"
+```
+
 # Unity - Builder
 
 (Not affiliated with Unity Technologies)
