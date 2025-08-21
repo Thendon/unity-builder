@@ -15,7 +15,8 @@ async function runMain() {
     Action.checkCompatibility();
     Cache.verify();
 
-    let { workspace, actionFolder } = Action;
+    let { workspace } = Action;
+    const { actionFolder } = Action;
 
     const buildParameters = await BuildParameters.create();
     const baseImage = new ImageTag(buildParameters);
@@ -23,9 +24,11 @@ async function runMain() {
     if (buildParameters.workspaceVolumeName !== '') {
       workspace = buildParameters.workspaceVolumeName;
     }
+
+    let actionVolume = actionFolder;
     if (buildParameters.actionsVolumeName !== '') {
       const actionName = path.basename(path.dirname(actionFolder));
-      actionFolder = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
+      actionVolume = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
     }
 
     let exitCode = -1;
@@ -38,7 +41,7 @@ async function runMain() {
           ? await MacBuilder.run(actionFolder)
           : await Docker.run(baseImage.toString(), {
               workspace,
-              actionFolder,
+              actionVolume,
               ...buildParameters,
             });
     } else {
