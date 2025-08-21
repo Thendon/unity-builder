@@ -41,7 +41,7 @@ async function runMain() {
           ? await MacBuilder.run(actionFolder)
           : await Docker.run(baseImage.toString(), {
               workspace,
-              actionVolume,
+              actionFolder: actionVolume,
               ...buildParameters,
             });
     } else {
