@@ -58,7 +58,6 @@ async function runMain() {
         if (buildParameters.actionsVolumeName !== '') {
             const actionName = node_path_1.default.basename(node_path_1.default.dirname(actionFolder));
             actionVolume = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
-            core.info(`buildParameters.actionsVolumeName override ${actionName} ${actionVolume}`);
         }
         let exitCode = -1;
         if (buildParameters.providerStrategy === 'local') {
@@ -69,7 +68,7 @@ async function runMain() {
                     ? await mac_builder_1.default.run(actionFolder)
                     : await model_1.Docker.run(baseImage.toString(), {
                         workspace,
-                        actionVolume,
+                        actionFolder: actionVolume,
                         ...buildParameters,
                     });
         }

@@ -29,7 +29,6 @@ async function runMain() {
     if (buildParameters.actionsVolumeName !== '') {
       const actionName = path.basename(path.dirname(actionFolder));
       actionVolume = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
-      core.info(`buildParameters.actionsVolumeName override ${actionName} ${actionVolume}`);
     }
 
     let exitCode = -1;
@@ -42,7 +41,7 @@ async function runMain() {
           ? await MacBuilder.run(actionFolder)
           : await Docker.run(baseImage.toString(), {
               workspace,
-              actionVolume,
+              actionFolder: actionVolume,
               ...buildParameters,
             });
     } else {
