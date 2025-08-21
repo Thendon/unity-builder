@@ -47,15 +47,17 @@ async function runMain() {
         }
         model_1.Action.checkCompatibility();
         model_1.Cache.verify();
-        let { workspace, actionFolder } = model_1.Action;
+        let { workspace } = model_1.Action;
+        const { actionFolder } = model_1.Action;
         const buildParameters = await model_1.BuildParameters.create();
         const baseImage = new model_1.ImageTag(buildParameters);
         if (buildParameters.workspaceVolumeName !== '') {
             workspace = buildParameters.workspaceVolumeName;
         }
+        let actionVolume = actionFolder;
         if (buildParameters.actionsVolumeName !== '') {
             const actionName = node_path_1.default.basename(node_path_1.default.dirname(actionFolder));
-            actionFolder = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
+            actionVolume = `${buildParameters.actionsVolumeName}/${actionName}/dist`;
         }
         let exitCode = -1;
         if (buildParameters.providerStrategy === 'local') {
@@ -66,7 +68,7 @@ async function runMain() {
                     ? await mac_builder_1.default.run(actionFolder)
                     : await model_1.Docker.run(baseImage.toString(), {
                         workspace,
-                        actionFolder,
+                        actionVolume,
                         ...buildParameters,
                     });
         }
