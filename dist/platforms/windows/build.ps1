@@ -204,6 +204,17 @@ while ($true) {
       Start-Sleep -Seconds 3
       Get-Process
 
+      # Force-kill any lingering Java processes (e.g. Gradle daemon) that
+      # can otherwise deadlock during JVM shutdown-hook cleanup and hang
+      # the container's own teardown. TerminateProcess bypasses the JVM's
+      # ApplicationShutdownHooks entirely, so this can't get stuck the way
+      # a graceful stop can.
+      Write-Output "Killing any lingering java.exe processes..."
+      Get-Process -Name java -ErrorAction SilentlyContinue | ForEach-Object {
+          Write-Output "Force-killing java.exe PID $($_.Id)"
+          Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+      }
+    
       $BUILD_EXIT_CODE = $unityProcess.ExitCode
 
       # Display results
